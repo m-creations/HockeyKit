@@ -19,15 +19,12 @@ class Renderer {
             switch($device) {
                 case Device::iOS:
                     return $item[AppUpdater::INDEX_PLATFORM] == AppUpdater::APP_PLATFORM_IOS;
-                    break;
                 
                 case Device::Android:
                     return $item[AppUpdater::INDEX_PLATFORM] == AppUpdater::APP_PLATFORM_ANDROID;
-                    break;
                 
                 case Device::Desktop:
                     return true;
-                    break;
             }
         });
         
