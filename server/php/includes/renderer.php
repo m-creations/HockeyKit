@@ -91,7 +91,7 @@ class Renderer {
             "content" => $this->_content, 
             "baseurl" => $this->_router->baseURL)
         )->get();
-	}
+    }
 }
 
 ?>
