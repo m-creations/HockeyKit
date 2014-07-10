@@ -121,7 +121,7 @@ class AppUpdater
     const FILE_IOS_PROFILE      = '.mobileprovision';
     const FILE_ANDROID_JSON     = '.json';
     const FILE_ANDROID_APK      = '.apk';
-    const FILE_COMMON_NOTES     = '.html';
+    const FILE_COMMON_NOTES     = '.txt';
     const FILE_COMMON_ICON      = '.png';
 
     const FILE_VERSION_MANDATORY  = '.mandatory';             // if present in a version subdirectory, defines that version to be mandatory
