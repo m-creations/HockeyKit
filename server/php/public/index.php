@@ -214,7 +214,7 @@
 
                     <h1>Install Apps</h1>
 
-                    <p class='hintdevice'>Visit this page directly from your your iPad, iPhone, or iPod touch and you will be able to install an app directly on your device. (requires iOS 4.0 or later)</p>
+                    <p class='hintdevice'>Visit this page directly from your iPad, iPhone, or iPod touch and you will be able to install an app directly on your device. (requires iOS 4.0 or later)</p>
 
                     <p class='hintdevice'>If your device does not have iOS 4.0 or later, please download the provisioning profile and the application on your computer from this page and install it <a href="<?php echo $b ?>itunes-installation.html">manually</a> via iTunes.
                     </p>
@@ -282,7 +282,7 @@
 
                     <h1>Install Apps</h1>
 
-                    <p class='hintdevice'>Visit this page directly from your your iPad, iPhone, iPod touch or Android device and you will be able to install an app directly on your device. (requires iOS 4.0 or later)</p>
+                    <p class='hintdevice'>Visit this page directly from your iPad, iPhone, iPod touch or Android device and you will be able to install an app directly on your device. (requires iOS 4.0 or later)</p>
 
                     <p class='hintdevice'><strong>iOS:</strong> If your device does not have iOS 4.0 or later, please download the provisioning profile and the application on your computer from this page and install it <a href="<?php echo $b ?>itunes-installation.html">manually</a> via iTunes.
                     </p>
