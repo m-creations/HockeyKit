@@ -21,6 +21,19 @@
             /mobile/i.test(navigator.userAgent) &&
             !window.location.hash &&
             setTimeout(function () { window.scrollTo(0, 1); }, 2000);
+            
+            if( ( navigator.userAgent.match( /iPhone/i ) ) ||
+                ( navigator.userAgent.match( /iPod/i ) ) ||
+                ( navigator.userAgent.match( /iPad/i ) )) {
+               document.body.classList.add( 'iOS' );
+            }
+            else if ( navigator.userAgent.match( /Android/i ) ) {
+                document.body.classList.add( 'android' );
+            }
+            else {
+                document.body.classList.add( 'desktop' );
+            }
+
         </script>
     </body>
 </html>
