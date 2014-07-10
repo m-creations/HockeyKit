@@ -2,6 +2,6 @@
     margin-top:0px;
 }
 
-#container .icon {
+body.iOS #container .icon, body.desktop #container .icon {
     border-radius:20px;
 }
