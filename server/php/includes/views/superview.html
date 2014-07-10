@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>App Installer</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="{baseurl}css/bootstrap.min.css" type="text/css" media="screen, projection">
+        <link rel="stylesheet" href="{baseurl}css/overrides.css" type="text/css" media="screen, projection">
+        <link rel="alternate" type="application/rss+xml" title="App Updates" href="{baseurl}feed.php" />
+    </head>
+    <body>
+        <div id="container" class="container">
+            <h1>Install Apps</h1>
+            <p class='lead'>Visit this page directly from your iPad, iPhone, iPod touch or Android device and you will be able to install an app directly on your device.</p>
+            <hr />
+        <div>
+        {content}
+
+    
+        <script type="text/javascript" charset="utf-8">
+            /mobile/i.test(navigator.userAgent) &&
+            !window.location.hash &&
+            setTimeout(function () { window.scrollTo(0, 1); }, 2000);
+        </script>
+    </body>
+</html>
