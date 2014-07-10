@@ -87,9 +87,9 @@ class Renderer {
     
     
     public function __toString(){
-		return $this->_superview->replaceAll(array(
-		    "content" => $this->_content, 
-		    "baseurl" => $this->_router->baseURL)
+        return $this->_superview->replaceAll(array(
+            "content" => $this->_content, 
+            "baseurl" => $this->_router->baseURL)
         )->get();
 	}
 }
