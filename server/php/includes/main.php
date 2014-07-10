@@ -31,7 +31,9 @@ require_once('config.inc');
 require_once('helper.php');
 require_once('logger.php');
 require_once('router.php');
-require_once('devicedetector.php');
+require_once('view.php');
+require_once('device.php');
+require_once('renderer.php');
 
 class AppUpdater
 {
