@@ -89,7 +89,8 @@ class Renderer {
         return $this->_superview->replaceAll(array(
             "content"       => $this->_content, 
             "baseurl"       => $this->_router->baseURL,
-            "downloadURL"   => $this->_downloadURL
+            "downloadURL"   => $this->_downloadURL,
+            "copyright"     => COPYRIGHT_FOOTER
         ))->get();
     }
 }
