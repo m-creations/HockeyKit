@@ -360,6 +360,11 @@ class AppUpdater
         $appBundleIdentifier = $arguments['bundleidentifier'];
         
         $file = join($arguments, "/");
+        $path = $this->appDirectory . $file;
+        if (!file_exists($path)) {
+            return;
+        }
+        
         $directory = dir($this->appDirectory . $file);
 
         // now check if this directory has the 3 mandatory files
