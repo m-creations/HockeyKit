@@ -365,7 +365,7 @@ class AppUpdater
             return;
         }
         
-        $directory = dir($this->appDirectory . $file);
+        $directory = dir($path);
 
         // now check if this directory has the 3 mandatory files
         $device = null;
