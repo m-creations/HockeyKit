@@ -8,10 +8,10 @@
         <link rel="stylesheet" href="{baseurl}css/overrides.css" type="text/css" media="screen, projection">
         <link rel="alternate" type="application/rss+xml" title="App Updates" href="{baseurl}feed.php" />
     </head>
-    <body>
+    <body class="text-center">
         <div id="container" class="container">
             <h1>Install Apps</h1>
-            <p class='lead'>Visit this page directly from your iPad, iPhone, iPod touch or Android device and you will be able to install an app directly on your device.</p>
+            <p class='lead visible-md visible-lg'>Visit this page directly from your iPad, iPhone, iPod touch or Android device and you will be able to install an app directly on your device.</p>
             <hr />
         <div>
         {content}
@@ -23,8 +23,7 @@
             setTimeout(function () { window.scrollTo(0, 1); }, 2000);
             
             if( ( navigator.userAgent.match( /iPhone/i ) ) ||
-                ( navigator.userAgent.match( /iPod/i ) ) ||
-                ( navigator.userAgent.match( /iPad/i ) )) {
+                ( navigator.userAgent.match( /iP[oa]d/i ) ) ) {
                document.body.classList.add( 'iOS' );
             }
             else if ( navigator.userAgent.match( /Android/i ) ) {

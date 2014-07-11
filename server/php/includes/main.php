@@ -34,6 +34,7 @@ require_once('router.php');
 require_once('view.php');
 require_once('device.php');
 require_once('renderer.php');
+require_once('assetdirectory.php');
 
 class AppUpdater
 {
@@ -193,7 +194,7 @@ class AppUpdater
     
     protected function app($arguments)
     {
-        return $this->show($arguments['bundleidentifier']);
+        return $this->show($arguments);
     }
     
     protected function validateDir($dir)
@@ -274,144 +275,12 @@ class AppUpdater
         }
     }
     
-    protected function checkProtectedVersion($restrict)
+    protected function getApplicationVersions(Directory $directory, $platform = null)
     {
-        $allowedTeams = array();
-        foreach (@file($restrict) as $line) {
-            if (preg_match('/^\s*#/', $line)) continue;
-            $items = array_filter(array_map('trim', explode(',', $line)));
-            $allowedTeams = array_merge($allowedTeams, $items);
-        }
-
-        if (!$allowedTeams) return true;
-
-        $udid = Router::arg(self::PARAM_2_UDID);
-        if (!$udid) return false;
-        
-        $users = self::parseUserList();
-        if (isset($users[$udid])) {
-            return count(array_intersect($users[$udid]['teams'], $allowedTeams)) > 0;
-        }
-        
-        return false;
-    }
-    
-    protected function getApplicationVersions($bundleidentifier, $platform = null)
-    {
-        $files = array();
         
         $language = Router::arg(self::PARAM_2_LANGUAGE);
-        
-        // iOS
-        $ipa        = @array_shift(glob($this->appDirectory.$bundleidentifier . '/*' . self::FILE_IOS_IPA));
-        $plist      = @array_shift(glob($this->appDirectory.$bundleidentifier . '/*' . self::FILE_IOS_PLIST));
-        $profile    = @array_shift(glob($this->appDirectory.$bundleidentifier . '/*' . self::FILE_IOS_PROFILE));
-
-        // Android
-        $apk        = @array_shift(glob($this->appDirectory.$bundleidentifier . '/*' . self::FILE_ANDROID_APK));
-        $json       = @array_shift(glob($this->appDirectory.$bundleidentifier . '/*' . self::FILE_ANDROID_JSON));
-        
-        $note = '';
-        // Common
-        if ($language) {
-            $note   = @array_shift(glob($this->appDirectory.$bundleidentifier . '/*' . self::FILE_COMMON_NOTES . '.' . $language));
-        }
-        if (!$note) {
-            $note   = @array_shift(glob($this->appDirectory.$bundleidentifier . '/*' . self::FILE_COMMON_NOTES));   // the default language file should not have a language extension, so if en is default, never creaete a .html.en file!
-        }
-        $icon       = @array_shift(glob($this->appDirectory.$bundleidentifier . '/*' . self::FILE_COMMON_ICON));
-        
-        $allVersions = array();
-        
-        if ((!$ipa || !$plist) && 
-            (!$apk || !$json)) {
-            // check if any are available in a subdirectory
-            
-            $subDirs = array();
-            if ($handleSub = opendir($this->appDirectory . $bundleidentifier)) {
-                while (($fileSub = readdir($handleSub)) !== false) {
-                    if (!in_array($fileSub, array('.', '..')) && 
-                        is_dir($this->appDirectory . $bundleidentifier . '/'. $fileSub)) {
-                        array_push($subDirs, $fileSub);
-                    }
-                }
-                closedir($handleSub);
-            }
-
-            // Sort the files and display
-            usort($subDirs, array($this, 'sort_versions'));
-            
-            if (count($subDirs) > 0) {
-                foreach ($subDirs as $subDir) {
-                    // iOS
-                    $ipa        = @array_shift(glob($this->appDirectory.$bundleidentifier . '/'. $subDir . '/*' . self::FILE_IOS_IPA));             // this file could be in a subdirectory per version
-                    $plist      = @array_shift(glob($this->appDirectory.$bundleidentifier . '/'. $subDir . '/*' . self::FILE_IOS_PLIST));           // this file could be in a subdirectory per version
-                    
-                    // Android
-                    $apk        = @array_shift(glob($this->appDirectory.$bundleidentifier . '/'. $subDir . '/*' . self::FILE_ANDROID_APK));         // this file could be in a subdirectory per version
-                    $json       = @array_shift(glob($this->appDirectory.$bundleidentifier . '/'. $subDir . '/*' . self::FILE_ANDROID_JSON));        // this file could be in a subdirectory per version
-                    
-                    // Common
-                    $note = '';                                                                                                                   // this file could be in a subdirectory per version
-                    if ($language) {
-                        $note   = @array_shift(glob($this->appDirectory.$bundleidentifier . '/'. $subDir . '/*' . self::FILE_COMMON_NOTES . '.' . $language));
-                    }
-                    if (!$note) {
-                        $note   = @array_shift(glob($this->appDirectory.$bundleidentifier . '/'. $subDir . '/*' . self::FILE_COMMON_NOTES));
-                    }
-                    $mandatory  = @array_shift(glob($this->appDirectory.$bundleidentifier . '/'. $subDir . '/*' . self::FILE_VERSION_MANDATORY));    // this file defines if the version is mandatory
-                    $restrict   = @array_shift(glob($this->appDirectory.$bundleidentifier . '/'. $subDir . '/*' . self::FILE_VERSION_RESTRICT));    // this file defines the teams allowed to access this version
-                                        
-                    if ($ipa && $plist && (!$platform || $platform == self::PLATFORM_IOS)) {
-                        $version = array();
-                        $version[self::FILE_IOS_IPA] = $ipa;
-                        $version[self::FILE_IOS_PLIST] = $plist;
-                        $version[self::FILE_COMMON_NOTES] = $note;
-                        $version[self::FILE_VERSION_RESTRICT] = $restrict;
-                        $version[self::FILE_VERSION_MANDATORY] = $mandatory;
-                        
-                        // if this is a restricted version, check if the UDID is provided and allowed
-                        if ($restrict && !$this->checkProtectedVersion($restrict)) {
-                            continue;
-                        }
-                        
-                        $allVersions[$subDir] = $version;
-                    } else if ($apk && $json && (!$platform || $platform == self::PLATFORM_ANDROID)) {
-                        $version = array();
-                        $version[self::FILE_ANDROID_APK] = $apk;
-                        $version[self::FILE_ANDROID_JSON] = $json;
-                        $version[self::FILE_COMMON_NOTES] = $note;
-                        $allVersions[$subDir] = $version;
-                    }
-                }
-
-                if (count($allVersions) > 0) {
-                    $files[self::VERSIONS_SPECIFIC_DATA] = $allVersions;
-                    $files[self::VERSIONS_COMMON_DATA][self::FILE_IOS_PROFILE] = $profile;
-                    $files[self::VERSIONS_COMMON_DATA][self::FILE_COMMON_ICON] = $icon;
-                }
-            }
-        } else {
-            $version = array();
-            if ($ipa && $plist) {
-                $version[self::FILE_IOS_IPA] = $ipa;
-                $version[self::FILE_IOS_PLIST] = $plist;
-                $version[self::FILE_COMMON_NOTES] = $note;
-                $allVersions[] = $version;
-                $files[self::VERSIONS_SPECIFIC_DATA] = $allVersions;
-                $files[self::VERSIONS_COMMON_DATA][self::FILE_IOS_PROFILE] = $profile;
-                $files[self::VERSIONS_COMMON_DATA][self::FILE_COMMON_ICON] = $icon;
-            } else if ($apk && $json) {
-                $version[self::FILE_ANDROID_APK] = $apk;
-                $version[self::FILE_ANDROID_JSON] = $json;
-                $version[self::FILE_COMMON_NOTES] = $note;
-                $allVersions[] = $version;
-                $files[self::VERSIONS_SPECIFIC_DATA] = $allVersions;
-                $files[self::VERSIONS_COMMON_DATA][self::FILE_COMMON_ICON] = $icon;
-            }
-        }
-        
-        return $files;
+        $assetDirectory = new AssetDirectory($directory, $language);
+        return $assetDirectory->getApplicationVersions($platform);
     }
     
     protected function deliver($bundleidentifier, $api, $format)
@@ -486,72 +355,64 @@ class AppUpdater
         return $publicVersion;
     }
     
-    public function show($appBundleIdentifier)
+    public function show($arguments)
     {
-        // first get all the subdirectories, which do not have a file named "private" present
-        if ($handle = opendir($this->appDirectory)) {
-            while (($file = readdir($handle)) !== false) {
-                if (
-                  in_array($file, array('.', '..')) ||
-                  !is_dir($this->appDirectory . $file) ||
-                  (
-                    glob($this->appDirectory . $file . '/private') &&
-                    !$appBundleIdentifier &&
-                    $this->logic != 'stats'
-                  )
-                )
-                {
-                    // skip if not a directory or has `private` file
-                    // but only if no bundle identifier is provided to this function
-                    continue;
-                }
-                
-                // if a bundle identifier is provided and the directory does not match, continue
-                if ($appBundleIdentifier && $file != $appBundleIdentifier) {
-                    continue;
-                }
+        $appBundleIdentifier = $arguments['bundleidentifier'];
+        
+        $file = join($arguments, "/");
+        $directory = dir($this->appDirectory . $file);
 
-                // now check if this directory has the 3 mandatory files
-                
-                $files = $this->getApplicationVersions($file);
-                
-                if (count($files) == 0) {
-                    continue;
-                }
-                
-                $current = $this->findPublicVersion($files[self::VERSIONS_SPECIFIC_DATA]);
-                $ipa      = isset($current[self::FILE_IOS_IPA]) ? $current[self::FILE_IOS_IPA] : null;
-                $plist    = isset($current[self::FILE_IOS_PLIST]) ? $current[self::FILE_IOS_PLIST] : null;
-                $apk      = isset($current[self::FILE_ANDROID_APK]) ? $current[self::FILE_ANDROID_APK] : null;
-                $json     = isset($current[self::FILE_ANDROID_JSON]) ? $current[self::FILE_ANDROID_JSON] : null;
-                $note     = isset($current[self::FILE_COMMON_NOTES]) ? $current[self::FILE_COMMON_NOTES] : null;
-                $restrict = isset($current[self::FILE_VERSION_RESTRICT]) ? $current[self::FILE_VERSION_RESTRICT] : null;
-                
-                $profile = isset($files[self::VERSIONS_COMMON_DATA][self::FILE_IOS_PROFILE]) ?
-                    $files[self::VERSIONS_COMMON_DATA][self::FILE_IOS_PROFILE] : null;
-                $image = isset($files[self::VERSIONS_COMMON_DATA][self::FILE_COMMON_ICON]) ?
-                    $files[self::VERSIONS_COMMON_DATA][self::FILE_COMMON_ICON] : null;
+        // now check if this directory has the 3 mandatory files
+        $device = null;
+        switch(Device::currentDevice()) {
+            case Device::iOS:
+                $device = self::PLATFORM_IOS;
+                break;
+            case Device::Android:
+                $device = self::PLATFORM_ANDROID;
+                break;
+            
+        }
 
-                if (!$ipa && !$apk) {
-                    continue;
-                }
+        $files = $this->getApplicationVersions($directory, $device);
 
-                // if this app version has any restrictions, don't show it on the web interface!
-                // we make it easy for now and do not check if the data makes sense and has users assigned to the defined team names
-                if ($restrict && strlen(file_get_contents($restrict)) > 0) {
-                    $current = $this->findPublicVersion($files);
-                }
-                
-                $app = $ipa ? $ipa : $apk;
+        if (count($files) == 0) {
+            return;
+        }
+        
+        $current = $this->findPublicVersion($files[self::VERSIONS_SPECIFIC_DATA]);
+        $ipa      = isset($current[self::FILE_IOS_IPA]) ? $current[self::FILE_IOS_IPA] : null;
+        $plist    = isset($current[self::FILE_IOS_PLIST]) ? $current[self::FILE_IOS_PLIST] : null;
+        $apk      = isset($current[self::FILE_ANDROID_APK]) ? $current[self::FILE_ANDROID_APK] : null;
+        $json     = isset($current[self::FILE_ANDROID_JSON]) ? $current[self::FILE_ANDROID_JSON] : null;
+        $note     = isset($current[self::FILE_COMMON_NOTES]) ? $current[self::FILE_COMMON_NOTES] : null;
+        $restrict = isset($current[self::FILE_VERSION_RESTRICT]) ? $current[self::FILE_VERSION_RESTRICT] : null;
+        
+        $profile = isset($files[self::VERSIONS_COMMON_DATA][self::FILE_IOS_PROFILE]) ?
+            $files[self::VERSIONS_COMMON_DATA][self::FILE_IOS_PROFILE] : null;
+        $image = isset($files[self::VERSIONS_COMMON_DATA][self::FILE_COMMON_ICON]) ?
+            $files[self::VERSIONS_COMMON_DATA][self::FILE_COMMON_ICON] : null;
 
-                $newApp = array();
-                $newApp['path']            = substr($app, strpos($app, $file));
-                $newApp[self::INDEX_DIR]   = $file;
-                $newApp[self::INDEX_IMAGE] = substr($image, strpos($image, $file));
-                $newApp[self::INDEX_NOTES] = $note ? Helper::nl2br_skip_html(file_get_contents($note)) : '';
-                $newApp[self::INDEX_STATS] = array();
+        if (!$ipa && !$apk) {
+            return;
+        }
 
-                if ($ipa) {
+        // if this app version has any restrictions, don't show it on the web interface!
+        // we make it easy for now and do not check if the data makes sense and has users assigned to the defined team names
+        if ($restrict && strlen(file_get_contents($restrict)) > 0) {
+            $current = $this->findPublicVersion($files);
+        }
+        
+        $app = $ipa ? $ipa : $apk;
+
+        $newApp = array();
+        $newApp['path']            = substr($app, strpos($app, $file));
+        $newApp[self::INDEX_DIR]   = $file;
+        $newApp[self::INDEX_IMAGE] = substr($image, strpos($image, $file));
+        $newApp[self::INDEX_NOTES] = $note ? Helper::nl2br_skip_html(file_get_contents($note)) : '';
+        $newApp[self::INDEX_STATS] = array();
+
+        if ($ipa) {
                     // iOS application
                     $plistDocument = new DOMDocument();
                     $plistDocument->load($plist);
@@ -572,28 +433,28 @@ class AppUpdater
                     $newApp[self::INDEX_PLATFORM]       = self::APP_PLATFORM_IOS;
                     
                 } else if ($apk) {
-                    // Android Application
-                    
-                    // parse the json file
-                    $parsed_json = json_decode(file_get_contents($json), true);
+            // Android Application
+            
+            // parse the json file
+            $parsed_json = json_decode(file_get_contents($json), true);
 
-                    // now get the application name from the json file
-                    $newApp[self::INDEX_APP]        = $parsed_json['title'];
-                    $newApp[self::INDEX_SUBTITLE]   = $parsed_json['versionName'];
-                    $newApp[self::INDEX_VERSION]    = $parsed_json['versionCode'];
-                    $newApp[self::INDEX_DATE]       = filectime($apk);
-                    $newApp[self::INDEX_APPSIZE]    = filesize($apk);
-                    $newApp[self::INDEX_PLATFORM]   = self::APP_PLATFORM_ANDROID;
+            // now get the application name from the json file
+            $newApp[self::INDEX_APP]        = $parsed_json['title'];
+            $newApp[self::INDEX_SUBTITLE]   = $parsed_json['versionName'];
+            $newApp[self::INDEX_VERSION]    = $parsed_json['versionCode'];
+            $newApp[self::INDEX_DATE]       = filectime($apk);
+            $newApp[self::INDEX_APPSIZE]    = filesize($apk);
+            $newApp[self::INDEX_PLATFORM]   = self::APP_PLATFORM_ANDROID;
 
-                    if (!isset($newApp[self::INDEX_NOTES])) {
-                        $newApp[self::INDEX_NOTES]      = isset($parsed_json['notes']) ? $parsed_json['notes'] : '';
-                    }
-                }
-                
-                // now get the current user statistics
-                $filename = $this->appDirectory."stats/".$file;
+            if (!isset($newApp[self::INDEX_NOTES])) {
+                $newApp[self::INDEX_NOTES]      = isset($parsed_json['notes']) ? $parsed_json['notes'] : '';
+            }
+        }
         
-                if (file_exists($filename)) {
+        // now get the current user statistics
+        $filename = $this->appDirectory."stats/".$directory->path;
+
+        if (file_exists($filename)) {
                     $users = self::parseUserList();
                 
                     $lines = @file($filename, FILE_IGNORE_NEW_LINES);
@@ -616,14 +477,16 @@ class AppUpdater
                     }
                 
                     // sort by app version
-                    $newApp[self::INDEX_STATS] = Helper::array_orderby($newApp[self::INDEX_STATS], self::DEVICE_APPVERSION, SORT_DESC, self::DEVICE_OSVERSION, SORT_DESC, self::DEVICE_PLATFORM, SORT_ASC, self::DEVICE_INSTALLDATE, SORT_DESC, self::DEVICE_LASTCHECK, SORT_DESC);
-                }
-            
-                // add it to the array
-                $this->applications[] = $newApp;
-            }
-            closedir($handle);
+                    $newApp[self::INDEX_STATS] = Helper::array_orderby($newApp[self::INDEX_STATS], 
+                                                                        self::DEVICE_APPVERSION, SORT_DESC, 
+                                                                        self::DEVICE_OSVERSION, SORT_DESC, 
+                                                                        self::DEVICE_PLATFORM, SORT_ASC, 
+                                                                        self::DEVICE_INSTALLDATE, SORT_DESC, 
+                                                                        self::DEVICE_LASTCHECK, SORT_DESC);
         }
+    
+        // add it to the array
+        $this->applications[] = $newApp;
     }
     
     protected function parseUserList()

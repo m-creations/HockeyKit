@@ -62,7 +62,7 @@ class Renderer {
                 $button = new view("button.html");
                 $button->replaceAll(array(
                     "text"  => "Download Application",
-                    "url"   => "{baseurl}" . $app['path']
+                    "url"   => $this->_router->baseURL . $app['path']
                 ));
                 $buttons->append($button);
             }

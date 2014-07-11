@@ -1,17 +1,16 @@
 <div id="container" class="container-fluid">
     <div class="row">
-        <div class="col-xs-3">
-            <img class="icon" src="{baseurl}{image}">
-        </div>
-        <div class="col-xs-8">
-            <h2>{title}</h2>
-            <p><b>Version:</b> {version}<br />
+        <img class="icon" src="{baseurl}{image}">
+        <h2>{title}</h2>
+        <p>
+            <b>Version:</b> {version}<br />
             <b>Size:</b> {size}<br />
-            <b>Released:</b> {released}</p>
+            <b>Released:</b> {released}
+        </p>
     
-            {buttons}
+        <br />
+        {buttons}
             
-            {releasenotes}
-        </div>
+        {releasenotes}
     </div>
 </div>

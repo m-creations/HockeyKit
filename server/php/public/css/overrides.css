@@ -5,3 +5,7 @@
 body.iOS #container .icon, body.desktop #container .icon {
     border-radius:20px;
 }
+
+.icon {
+    max-width: 96px;
+}
