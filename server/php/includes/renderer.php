@@ -6,6 +6,7 @@ class Renderer {
     private $_appUpdater;
     private $_superView;
     private $_content;
+    private $_downloadURL;
     
     public function __construct(AppUpdater $appUpdater, Router $router) {
         $this->_appUpdater = $appUpdater;
@@ -60,9 +61,10 @@ class Renderer {
             if ($app[AppUpdater::INDEX_PLATFORM] == AppUpdater::APP_PLATFORM_IOS ||
                 $app[AppUpdater::INDEX_PLATFORM] == AppUpdater::APP_PLATFORM_ANDROID) {
                 $button = new view("button.html");
+                $this->_downloadURL = $this->_router->baseURL . $app['path'];
                 $button->replaceAll(array(
                     "text"  => "Download Application",
-                    "url"   => $this->_router->baseURL . $app['path']
+                    "url"   => $this->_downloadURL
                 ));
                 $buttons->append($button);
             }
@@ -85,9 +87,11 @@ class Renderer {
     
     public function __toString(){
         return $this->_superview->replaceAll(array(
-            "content" => $this->_content, 
-            "baseurl" => $this->_router->baseURL)
-        )->get();
+            "content"       => $this->_content, 
+            "baseurl"       => $this->_router->baseURL,
+            "downloadURL"   => $this->_downloadURL,
+            "copyright"     => COPYRIGHT_FOOTER
+        ))->get();
     }
 }
 

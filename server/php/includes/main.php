@@ -197,19 +197,6 @@ class AppUpdater
         return $this->show($arguments);
     }
     
-    protected function validateDir($dir)
-    {
-       // do not allow .. or / in the name and check if that path actually exists
-       if (
-           $dir &&
-           !preg_match('#(/|\.\.)#u', $dir) &&
-           file_exists($this->appDirectory.$dir))
-       {
-           return $dir;
-       }
-       return null;
-    }
-    
     protected function addStats($bundleidentifier, $format)
     {
         // did we get any user data?
@@ -277,7 +264,6 @@ class AppUpdater
     
     protected function getApplicationVersions(Directory $directory, $platform = null)
     {
-        
         $language = Router::arg(self::PARAM_2_LANGUAGE);
         $assetDirectory = new AssetDirectory($directory, $language);
         return $assetDirectory->getApplicationVersions($platform);
@@ -519,11 +505,7 @@ class AppUpdater
             
         return $users;
     }
-    
-    protected function sort_versions($a, $b)
-    {
-      return version_compare($a, $b, '<');
-    }
+
 }
 
 
