@@ -413,26 +413,26 @@ class AppUpdater
         $newApp[self::INDEX_STATS] = array();
 
         if ($ipa) {
-                    // iOS application
-                    $plistDocument = new DOMDocument();
-                    $plistDocument->load($plist);
-                    $parsed_plist = parsePlist($plistDocument);
+            // iOS application
+            $plistDocument = new DOMDocument();
+            $plistDocument->load($plist);
+            $parsed_plist = parsePlist($plistDocument);
 
-                    // now get the application name from the plist
-                    $newApp[self::INDEX_APP]            = $parsed_plist['items'][0]['metadata']['title'];
-                    if (isset($parsed_plist['items'][0]['metadata']['subtitle']) && $parsed_plist['items'][0]['metadata']['subtitle'])
-                        $newApp[self::INDEX_SUBTITLE]   = $parsed_plist['items'][0]['metadata']['subtitle'];
-                    $newApp[self::INDEX_VERSION]        = $parsed_plist['items'][0]['metadata']['bundle-version'];
-                    $newApp[self::INDEX_DATE]           = filectime($ipa);
-                    $newApp[self::INDEX_APPSIZE]        = filesize($ipa);
+            // now get the application name from the plist
+            $newApp[self::INDEX_APP]            = $parsed_plist['items'][0]['metadata']['title'];
+            if (isset($parsed_plist['items'][0]['metadata']['subtitle']) && $parsed_plist['items'][0]['metadata']['subtitle'])
+                $newApp[self::INDEX_SUBTITLE]   = $parsed_plist['items'][0]['metadata']['subtitle'];
+            $newApp[self::INDEX_VERSION]        = $parsed_plist['items'][0]['metadata']['bundle-version'];
+            $newApp[self::INDEX_DATE]           = filectime($ipa);
+            $newApp[self::INDEX_APPSIZE]        = filesize($ipa);
+            
+            if ($profile) {
+                $newApp[self::INDEX_PROFILE]        = $profile;
+                $newApp[self::INDEX_PROFILE_UPDATE] = filectime($profile);
+            }
+            $newApp[self::INDEX_PLATFORM]       = self::APP_PLATFORM_IOS;
                     
-                    if ($profile) {
-                        $newApp[self::INDEX_PROFILE]        = $profile;
-                        $newApp[self::INDEX_PROFILE_UPDATE] = filectime($profile);
-                    }
-                    $newApp[self::INDEX_PLATFORM]       = self::APP_PLATFORM_IOS;
-                    
-                } else if ($apk) {
+        } else if ($apk) {
             // Android Application
             
             // parse the json file
@@ -455,34 +455,34 @@ class AppUpdater
         $filename = $this->appDirectory."stats/".$directory->path;
 
         if (file_exists($filename)) {
-                    $users = self::parseUserList();
+            $users = self::parseUserList();
                 
-                    $lines = @file($filename, FILE_IGNORE_NEW_LINES);
-                    foreach ($lines as $i => $line) {
-                        if (!$line) continue;
+            $lines = @file($filename, FILE_IGNORE_NEW_LINES);
+            foreach ($lines as $i => $line) {
+                if (!$line) continue;
                         
-                        $device = explode(self::STATS_SEPARATOR, $line);
-                        $device[0] = strtolower($device[0]); // need case-insensitive match
-                        $newdevice = array();
-                        $newdevice[self::DEVICE_USER]        = isset($users[$device[0]]) ? $users[$device[0]]['name'] : '-';
-                        $newdevice[self::DEVICE_PLATFORM]    = Helper::mapPlatform(isset($device[1]) ? $device[1] : null);
-                        $newdevice[self::DEVICE_OSVERSION]   = isset($device[2]) ? $device[2] : '';
-                        $newdevice[self::DEVICE_APPVERSION]  = isset($device[3]) ? $device[3] : '';
-                        $newdevice[self::DEVICE_LASTCHECK]   = isset($device[4]) ? $device[4] : '';
-                        $newdevice[self::DEVICE_LANGUAGE]    = isset($device[5]) ? $device[5] : '';
-                        $newdevice[self::DEVICE_INSTALLDATE] = isset($device[6]) ? $device[6] : '';
-                        $newdevice[self::DEVICE_USAGETIME]   = isset($device[7]) ? $device[7] : '';
-                    
-                        $newApp[self::INDEX_STATS][] = $newdevice;
-                    }
+                $device = explode(self::STATS_SEPARATOR, $line);
+                $device[0] = strtolower($device[0]); // need case-insensitive match
+                $newdevice = array();
+                $newdevice[self::DEVICE_USER]        = isset($users[$device[0]]) ? $users[$device[0]]['name'] : '-';
+                $newdevice[self::DEVICE_PLATFORM]    = Helper::mapPlatform(isset($device[1]) ? $device[1] : null);
+                $newdevice[self::DEVICE_OSVERSION]   = isset($device[2]) ? $device[2] : '';
+                $newdevice[self::DEVICE_APPVERSION]  = isset($device[3]) ? $device[3] : '';
+                $newdevice[self::DEVICE_LASTCHECK]   = isset($device[4]) ? $device[4] : '';
+                $newdevice[self::DEVICE_LANGUAGE]    = isset($device[5]) ? $device[5] : '';
+                $newdevice[self::DEVICE_INSTALLDATE] = isset($device[6]) ? $device[6] : '';
+                $newdevice[self::DEVICE_USAGETIME]   = isset($device[7]) ? $device[7] : '';
+            
+                $newApp[self::INDEX_STATS][] = $newdevice;
+            }
                 
-                    // sort by app version
-                    $newApp[self::INDEX_STATS] = Helper::array_orderby($newApp[self::INDEX_STATS], 
-                                                                        self::DEVICE_APPVERSION, SORT_DESC, 
-                                                                        self::DEVICE_OSVERSION, SORT_DESC, 
-                                                                        self::DEVICE_PLATFORM, SORT_ASC, 
-                                                                        self::DEVICE_INSTALLDATE, SORT_DESC, 
-                                                                        self::DEVICE_LASTCHECK, SORT_DESC);
+            // sort by app version
+            $newApp[self::INDEX_STATS] = Helper::array_orderby($newApp[self::INDEX_STATS], 
+                                                                self::DEVICE_APPVERSION, SORT_DESC, 
+                                                                self::DEVICE_OSVERSION, SORT_DESC, 
+                                                                self::DEVICE_PLATFORM, SORT_ASC, 
+                                                                self::DEVICE_INSTALLDATE, SORT_DESC, 
+                                                                self::DEVICE_LASTCHECK, SORT_DESC);
         }
     
         // add it to the array
