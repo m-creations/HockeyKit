@@ -6,13 +6,11 @@
 class Router
 {
     static $routes = array(
-        '/' => '/index',
-        '/apps' => '/index',
+        '/apps/(?P<bundleidentifier>[\w/]*?)/?(?P<platform>android|ios)?/?(?P<version>[0-9.]+)?$' => '/app',
+        '/api/2/apps/:bundleidentifier@^[\w-.]+$' => '/api',
         '/apps/' => '/index',
-        '/apps/:bundleidentifier@^[\w-.]+$' => '/app',
-        '/apps/:bundleidentifier@^[\w-.]+/:variant@.*' => '/app',
-        '/apps/:bundleidentifier@^[\w-.]+/:variant@.*/:version@.*' => '/app',
-        '/api/2/apps/:bundleidentifier@^[\w-.]+$' => '/api'
+        '/apps' => '/index',
+        '/' => '/index'
     );
 
     static protected $instance;
@@ -144,59 +142,22 @@ class Router
     
     public function match($url, $route, $info)
     {
-        // Logger::log("Route:\t$route");
-        list($controller, $action) = explode('/', $info);
+        $matches = array();
+        preg_match("/" .  addcslashes($route, "/") . "/", $url, $matches);
+        if (count($matches) == 0) return false;
         
-        $url_exploded = explode('/', $url);
-        $route_exploded = explode('/', $route);
-
-        if (count($url_exploded) != count($route_exploded))
-        {
-            // Logger::log('!!! Length does not match');
-            return false;
-        }
+        $keys = array_filter(array_keys($matches), function ($var) {
+            return !is_numeric($var);
+        });
         
         $arguments = array();
-        
-        $count = count($url_exploded);
-        $i = 0;
-        $is_matching = true;
-        
-        while ($is_matching && $i < $count)
-        {
-            $url_part   = $url_exploded[$i];
-            $route_part = $route_exploded[$i];
-            
-            // special route part?
-            if (strpos($route_part, ':') === 0)
-            {
-                // argument
-                if (!preg_match('/:([\w_]+)(@(.*))?/', $route_part, $matches))
-                {
-                    // Logger::log("!!! Argument $route_part does not match");
-                    return false;
-                }
-                
-                $argument = $matches[1];
-                $value = $url_part;
-                
-                if (!isset($matches[3]) || !preg_match("/{$matches[3]}/u", $value))
-                {
-                    // Logger::log("!!! Argument {$matches[1]} = $value does not match");
-                    return false;
-                }
-                
-                $arguments[$argument] = $value;
-            }
-            elseif ($url_part != $route_part)
-            {
-                // Logger::log("!!! $url_part does not match $route_part");
-                return false;
-            }
-            
-            $i++;
+        foreach ($keys as $key) {
+            $arguments[$key] = $matches[$key];
         }
         
+        // Logger::log("Route:\t$route");
+        list($controller, $action) = explode('/', $info);
+
         // Logger::log("*** Match $controller/$action");
         $this->controller = $controller;
         $this->action     = $action;

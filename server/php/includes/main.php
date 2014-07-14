@@ -345,12 +345,13 @@ class AppUpdater
     {
         $appBundleIdentifier = $arguments['bundleidentifier'];
         
+        if ($appBundleIdentifier == null) return;
+
         $file = join($arguments, "/");
         $path = $this->appDirectory . $file;
-        if (!file_exists($path)) {
-            return;
-        }
         
+        if (!file_exists($path)) return;
+
         $directory = dir($path);
 
         // now check if this directory has the 3 mandatory files
