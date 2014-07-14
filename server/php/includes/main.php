@@ -340,39 +340,12 @@ class AppUpdater
         
         return $publicVersion;
     }
-    
-    public function show($arguments)
+	
+    protected function appFromVersionFileSet($fileSet, $file, $directory, $files)
     {
-        $appBundleIdentifier = $arguments['bundleidentifier'];
-        
-        if ($appBundleIdentifier == null) return;
-
-        $file = join($arguments, "/");
-        $path = $this->appDirectory . $file;
-        
-        if (!file_exists($path)) return;
-
-        $directory = dir($path);
-
-        // now check if this directory has the 3 mandatory files
-        $device = null;
-        switch(Device::currentDevice()) {
-            case Device::iOS:
-                $device = self::PLATFORM_IOS;
-                break;
-            case Device::Android:
-                $device = self::PLATFORM_ANDROID;
-                break;
-            
-        }
-
-        $files = $this->getApplicationVersions($directory, $device);
-
-        if (count($files) == 0) {
-            return;
-        }
-        
-        $current = $this->findPublicVersion($files[self::VERSIONS_SPECIFIC_DATA]);
+		
+		
+		$current = $fileSet;
         $ipa      = isset($current[self::FILE_IOS_IPA]) ? $current[self::FILE_IOS_IPA] : null;
         $plist    = isset($current[self::FILE_IOS_PLIST]) ? $current[self::FILE_IOS_PLIST] : null;
         $apk      = isset($current[self::FILE_ANDROID_APK]) ? $current[self::FILE_ANDROID_APK] : null;
@@ -477,8 +450,55 @@ class AppUpdater
                                                                 self::DEVICE_LASTCHECK, SORT_DESC);
         }
     
-        // add it to the array
-        $this->applications[] = $newApp;
+        return $newApp;
+	}
+    
+    public function show($arguments)
+    {
+		
+        $appBundleIdentifier = $arguments['bundleidentifier'];
+		print("appBundleIdentifier");
+		var_dump($appBundleIdentifier);
+        
+        if ($appBundleIdentifier == null) return;
+
+        $file = join($arguments, "/");
+        $path = $this->appDirectory . $file;
+		
+        
+        if (!file_exists($path)) return;
+
+        $directory = dir($path);
+
+        // now check if this directory has the 3 mandatory files
+        $device = null;
+        switch(Device::currentDevice()) {
+            case Device::iOS:
+                $device = self::PLATFORM_IOS;
+                break;
+            case Device::Android:
+                $device = self::PLATFORM_ANDROID;
+                break;
+            
+        }
+
+        $files = $this->getApplicationVersions($directory, $device);
+        
+		if (count($files) == 0) {
+            return;
+        }
+		
+		if (!array_key_exists('platform', $arguments) && !array_key_exists('version', $arguments)) {
+			$versions = $files[self::VERSIONS_SPECIFIC_DATA];
+			foreach ($versions as $version => $fileSet) {
+				$app = $this->appFromVersionFileSet($fileSet, $file, $directory, $files);
+				$this->applications[] = $app;	
+			}
+		} else {
+			$current = $this->findPublicVersion($files[self::VERSIONS_SPECIFIC_DATA]);
+			$app = $this->appFromVersionFileSet($current, $file, $directory, $files);
+			$this->applications[] = $app;	
+		}		
     }
     
     protected function parseUserList()
