@@ -64,7 +64,9 @@ class AssetDirectory {
             foreach($objects as $object) {
                 if ($object->isDir()) {
                     $path = str_replace($this->_dir->path, "", $object->getPathname());
-                    $subdir = explode("/", $path)[1];
+                    
+                    $components = explode("/", $path);
+                    $subdir = $components[0];
                     if (!in_array($subdir, $this->ignored_subdirectories)) {
                         array_push($subDirs, $path);
                     }
