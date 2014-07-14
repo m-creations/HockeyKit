@@ -43,7 +43,7 @@ class Renderer {
                 "title"     => $app[AppUpdater::INDEX_APP],
                 "version"   => $version,
                 "size"      => round($app[AppUpdater::INDEX_APPSIZE] / 1024 / 1024, 1) . " MB",
-                "released"  => date('m/d/Y H:i:s', $app[AppUpdater::INDEX_DATE])
+                "utc_created_time"     =>  $app[AppUpdater::INDEX_DATE]
             ));
             
             // Add required buttons to the page.
