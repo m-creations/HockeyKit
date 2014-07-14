@@ -1,16 +1,22 @@
 <div id="container" class="container-fluid">
-    <div class="row">
-        <a href="{downloadURL}"><img class="icon" src="{baseurl}{image}"></a>
-        <h2>{title}</h2>
-        <p>
-            <b>Version:</b> {version}<br />
-            <b>Size:</b> {size}<br />
-            <b>Released:</b> {released}
-        </p>
-    
-        <br />
-        {buttons}
+	<div class="row">
+		<div class="col-xs-3">
+			<a href="{downloadURL}"><img class="icon" src="{baseurl}{image}"></a></div>
+			<div class="col-xs-8">
+				<div><h2>{title}</h2></div>
+				<div><b>Version:</b> {version}</div>
+				<div><b>Size:</b> {size}</div>
+				<div><b>Released: </b><span id="releasedDate">{released}</span></div></br>
+						
+				<script type="text/javascript">		
+				var utcTimeInMins = "{utc_created_time}";			
+				var dateWithUserOffset = new Date(utcTimeInMins * 1000);
+				document.getElementById("releasedDate").innerHTML = dateWithUserOffset.toLocaleString();
+				</script>
+			
+				{buttons}
             
-        {releasenotes}
-    </div>
-</div>
+				{releasenotes}
+			</div>
+		</div>
+	</div>
