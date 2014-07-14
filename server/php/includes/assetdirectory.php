@@ -12,6 +12,13 @@ class AssetDirectory {
     public $json;
     public $note;
     
+    /**
+    These directories won't be searched when traversing
+    down the directory structure. If the user accesses
+    directly these will still function as normal.
+    */
+    private $ignored_subdirectories = array("support");
+    
     
     public function __construct(Directory $dir, $language) {
         $this->_dir = $dir;
@@ -57,7 +64,10 @@ class AssetDirectory {
             foreach($objects as $object) {
                 if ($object->isDir()) {
                     $path = str_replace($this->_dir->path, "", $object->getPathname());
-                    array_push($subDirs, $path);
+                    $subdir = explode("/", $path)[1];
+                    if (!in_array($subdir, $this->ignored_subdirectories)) {
+                        array_push($subDirs, $path);
+                    }
                 }
             }
         
