@@ -18,7 +18,6 @@ bin
 
 # osx noise
 .DS_Store
-*.ipa
 *.swp
 *~.nib
 profile
