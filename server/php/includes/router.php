@@ -7,7 +7,7 @@ class Router
 {
     static $routes = array(
         '/apps/(?P<bundleidentifier>[\w/]*?)/?(?P<platform>android|ios)?/?(?P<version>[0-9.]+)?$' => '/app',
-        '/api/2/apps/:bundleidentifier@^[\w-.]+$' => '/api',
+        '/api/2/apps/(?P<bundleidentifier>[\w-.]+)$' => '/api',
         '/apps/' => '/index',
         '/apps' => '/index',
         '/' => '/index'
