@@ -53,12 +53,15 @@ class Renderer {
             ));
             
             if ($shouldUseTable) {
+                $this->_superview->replace("prompt", "Click on the icons below to visit the download page for each app.");
                 $content->replace("platform", $app[AppUpdater::INDEX_PLATFORM]);
                 $content->replace("download_link", dirname($app['path']));
                 $this->_content->append($content);
                 continue;
             }
 						
+            $this->_superview->replace("prompt", "Visit this page directly from your iPad, iPhone, iPod touch or Android device and you will be able to install an app directly on your device.");
+            
             $content->replace("size", round($app[AppUpdater::INDEX_APPSIZE] / 1024 / 1024, 1) . " MB");
             $content->replace("utc_created_time", $app[AppUpdater::INDEX_DATE]);
 				
