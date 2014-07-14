@@ -28,24 +28,40 @@ class Renderer {
                     return true;
             }
         });
-        
+		        		
+        $shouldUseTable = (count($applications) > 1);
+				
         foreach($applications as $app) {
             if (isset($app[AppUpdater::INDEX_SUBTITLE]) && $app[AppUpdater::INDEX_SUBTITLE]) {
                 $version = $app[AppUpdater::INDEX_SUBTITLE] . " (" . $app[AppUpdater::INDEX_VERSION] . ")";
             } else {
                 $version = $app[AppUpdater::INDEX_VERSION];
             }
+			
+            $fragment = $shouldUseTable ? "appstable.html" : "app.html";
         
+			
+            $image = $app[AppUpdater::INDEX_IMAGE];
+            $title = $app[AppUpdater::INDEX_APP];
+		
             // Configure the view for app information.
-            $content = new view("app.html");
+            $content = new view($fragment);
             $content->replaceAll(array(
-                "image"     => $app[AppUpdater::INDEX_IMAGE],
-                "title"     => $app[AppUpdater::INDEX_APP],
-                "version"   => $version,
-                "size"      => round($app[AppUpdater::INDEX_APPSIZE] / 1024 / 1024, 1) . " MB",
-                "utc_created_time"     =>  $app[AppUpdater::INDEX_DATE]
+                "image"     => $image,
+                "title"     => $title,
+                "version"   => $version
             ));
             
+            if ($shouldUseTable) {
+                $content->replace("platform", $app[AppUpdater::INDEX_PLATFORM]);
+                $content->replace("download_link", dirname($app['path']));
+                $this->_content->append($content);
+                continue;
+            }
+						
+            $content->replace("size", round($app[AppUpdater::INDEX_APPSIZE] / 1024 / 1024, 1) . " MB");
+            $content->replace("utc_created_time", $app[AppUpdater::INDEX_DATE]);
+				
             // Add required buttons to the page.
             $buttons = new view();
             if (isset($app[AppUpdater::INDEX_PROFILE]) && $app[AppUpdater::INDEX_PROFILE]) {
@@ -79,7 +95,7 @@ class Renderer {
             else {
                 $content->replace("releasenotes", new view());
             }
-            
+				            
             $this->_content->append($content);
         }
     }
