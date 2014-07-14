@@ -457,8 +457,6 @@ class AppUpdater
     {
 		
         $appBundleIdentifier = $arguments['bundleidentifier'];
-		print("appBundleIdentifier");
-		var_dump($appBundleIdentifier);
         
         if ($appBundleIdentifier == null) return;
 
