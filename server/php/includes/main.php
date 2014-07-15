@@ -486,7 +486,7 @@ class AppUpdater
             return;
         }
 		
-        if (!array_key_exists('platform', $arguments) && !array_key_exists('version', $arguments)) {
+        if (!array_key_exists('platform', $arguments) && !array_key_exists('version', $arguments) && !$device) {
             $versions = $files[self::VERSIONS_SPECIFIC_DATA];
             foreach ($versions as $version => $fileSet) {
                 $app = $this->appFromVersionFileSet($fileSet, $file, $directory, $files, $device);
