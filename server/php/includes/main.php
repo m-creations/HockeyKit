@@ -341,7 +341,7 @@ class AppUpdater
         return $publicVersion;
     }
 	
-    protected function appFromVersionFileSet($fileSet, $file, $directory, $files)
+    protected function appFromVersionFileSet($fileSet, $file, $directory, $files, $device)
     {
 		
 		
@@ -489,12 +489,12 @@ class AppUpdater
 		if (!array_key_exists('platform', $arguments) && !array_key_exists('version', $arguments)) {
 			$versions = $files[self::VERSIONS_SPECIFIC_DATA];
 			foreach ($versions as $version => $fileSet) {
-				$app = $this->appFromVersionFileSet($fileSet, $file, $directory, $files);
+				$app = $this->appFromVersionFileSet($fileSet, $file, $directory, $files, $device);
 				$this->applications[] = $app;	
 			}
 		} else {
 			$current = $this->findPublicVersion($files[self::VERSIONS_SPECIFIC_DATA]);
-			$app = $this->appFromVersionFileSet($current, $file, $directory, $files);
+			$app = $this->appFromVersionFileSet($current, $file, $directory, $files, $device);
 			$this->applications[] = $app;	
 		}		
     }
