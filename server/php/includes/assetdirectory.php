@@ -79,7 +79,6 @@ class AssetDirectory {
             });
             
             if (count($subDirs) > 0) {
-                $icon = null;
                 foreach ($subDirs as $subDir) {
           
                     $subDirectory = dir($this->_dir->path . $subDir);
@@ -93,33 +92,28 @@ class AssetDirectory {
                         $version[AppUpdater::FILE_VERSION_RESTRICT] = $subAssetDir->restrict;
                         $version[AppUpdater::FILE_VERSION_MANDATORY] = $subAssetDir->mandatory;
                         
-                        if ($icon == null) {
-                            $icon = $subAssetDir->icon;
-                        }
-                        
                         // if this is a restricted version, check if the UDID is provided and allowed
                         if ($subAssetDir->restrict && !$this->checkProtectedVersion($subAssetDir->restrict)) {
                             continue;
                         }
                         
+                        $version[AppUpdater::FILE_COMMON_ICON] = $subAssetDir->icon;
                         $allVersions[$subDir] = $version;
                     } else if ($subAssetDir->apk && $subAssetDir->json && (!$platform || $platform == AppUpdater::PLATFORM_ANDROID)) {
                         $version = array();
                         $version[AppUpdater::FILE_ANDROID_APK] = $subAssetDir->apk;
                         $version[AppUpdater::FILE_ANDROID_JSON] = $subAssetDir->json;
                         $version[AppUpdater::FILE_COMMON_NOTES] = $subAssetDir->note;
-                        $allVersions[$subDir] = $version;
                         
-                        if ($icon == null) {
-                            $icon = $subAssetDir->icon;
-                        }
+
+                        $version[AppUpdater::FILE_COMMON_ICON] = $subAssetDir->icon;
+                        $allVersions[$subDir] = $version;
                     }
                 }
         
                 if (count($allVersions) > 0) {
                     $files[AppUpdater::VERSIONS_SPECIFIC_DATA] = $allVersions;
                     $files[AppUpdater::VERSIONS_COMMON_DATA][AppUpdater::FILE_IOS_PROFILE] = $subAssetDir->profile;
-                    $files[AppUpdater::VERSIONS_COMMON_DATA][AppUpdater::FILE_COMMON_ICON] = $icon;
                 }
             }
         } else {
@@ -128,17 +122,17 @@ class AssetDirectory {
                 $version[AppUpdater::FILE_IOS_IPA] = $this->ipa;
                 $version[AppUpdater::FILE_IOS_PLIST] = $this->plist;
                 $version[AppUpdater::FILE_COMMON_NOTES] = $this->note;
+                $version[AppUpdater::FILE_COMMON_ICON] = $this->icon;
                 $allVersions[] = $version;
                 $files[AppUpdater::VERSIONS_SPECIFIC_DATA] = $allVersions;
                 $files[AppUpdater::VERSIONS_COMMON_DATA][AppUpdater::FILE_IOS_PROFILE] = $this->profile;
-                $files[AppUpdater::VERSIONS_COMMON_DATA][AppUpdater::FILE_COMMON_ICON] = $this->icon;
             } else if ($this->apk && $this->json) {
                 $version[AppUpdater::FILE_ANDROID_APK] = $this->apk;
                 $version[AppUpdater::FILE_ANDROID_JSON] = $this->json;
                 $version[AppUpdater::FILE_COMMON_NOTES] = $this->note;
+                $version[AppUpdater::FILE_COMMON_ICON] = $this->icon;
                 $allVersions[] = $version;
                 $files[AppUpdater::VERSIONS_SPECIFIC_DATA] = $allVersions;
-                $files[AppUpdater::VERSIONS_COMMON_DATA][AppUpdater::FILE_COMMON_ICON] = $this->icon;
             }
         }
         
