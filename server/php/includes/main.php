@@ -124,6 +124,7 @@ class AppUpdater
     const FILE_ANDROID_APK      = '.apk';
     const FILE_COMMON_NOTES     = '.txt';
     const FILE_COMMON_ICON      = '.png';
+    const ANDROID_SUBPLATFORM   = 'subplatform';
 
     const FILE_VERSION_MANDATORY  = '.mandatory';             // if present in a version subdirectory, defines that version to be mandatory
     const FILE_VERSION_RESTRICT   = '.team';                  // if present in a version subdirectory, defines the teams that do have access, comma separated
@@ -410,7 +411,11 @@ class AppUpdater
             $newApp[self::INDEX_DATE]       = filectime($apk);
             $newApp[self::INDEX_APPSIZE]    = filesize($apk);
             $newApp[self::INDEX_PLATFORM]   = self::APP_PLATFORM_ANDROID;
-
+            
+            if (isset($fileSet[self::ANDROID_SUBPLATFORM])) {
+                $newApp[self::ANDROID_SUBPLATFORM] = $fileSet[self::ANDROID_SUBPLATFORM];
+            }
+            
             if (!isset($newApp[self::INDEX_NOTES])) {
                 $newApp[self::INDEX_NOTES]      = isset($parsed_json['notes']) ? $parsed_json['notes'] : '';
             }
@@ -455,20 +460,8 @@ class AppUpdater
     
     public function show($arguments)
     {
-		
         $appBundleIdentifier = $arguments['bundleidentifier'];
         
-        if ($appBundleIdentifier == null) return;
-
-        $file = join($arguments, "/");
-        $path = $this->appDirectory . $file;
-		
-        
-        if (!file_exists($path)) return;
-
-        $directory = dir($path);
-
-        // now check if this directory has the 3 mandatory files
         $device = null;
         switch(Device::currentDevice()) {
             case Device::iOS:
@@ -479,6 +472,22 @@ class AppUpdater
                 break;
             
         }
+        
+        if ($appBundleIdentifier == null) return;
+        
+        if (isset($arguments['platform']) && $arguments['platform'] == "") {
+            // Use the current device platform
+            $arguments['platform'] = $device;
+        }
+        
+        $file = join($arguments, "/");
+        $path = $this->appDirectory . $file;
+        
+        if (!file_exists($path)) return;
+
+        $directory = dir($path);
+
+        // now check if this directory has the 3 mandatory files
 
         $files = $this->getApplicationVersions($directory, $device);
         
@@ -486,7 +495,9 @@ class AppUpdater
             return;
         }
 		
-        if (!array_key_exists('platform', $arguments) && !array_key_exists('version', $arguments) && !$device) {
+		$desktop_index = !array_key_exists('platform', $arguments) && !array_key_exists('version', $arguments) && !$device;
+		$android_version_index = count($files) > 1 && $device == self::PLATFORM_ANDROID;
+        if ($desktop_index || $android_version_index) {
             $versions = $files[self::VERSIONS_SPECIFIC_DATA];
             foreach ($versions as $version => $fileSet) {
                 $app = $this->appFromVersionFileSet($fileSet, $file, $directory, $files, $device);

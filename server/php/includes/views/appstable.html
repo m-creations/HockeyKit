@@ -1,22 +1,14 @@
-
-<head>
-
-   <style>
-    tr.spaceUnder > td
-    {
-        padding-bottom: 15px;
-        font-size:13pt;
-    }
-    </style>
-
-</head>
-
-<table style="width: 100%" cellspacing="10">
-    <tr class="spaceUnder">
-        <td align="left" width="5%"><a href="{download_link}"><img class="icon" width="75" height="75" src="{baseurl}{image}"></a></div></td>
-        <td align="left" width="15%"><a href="{download_link}" style="color: rgb(0,0,0)">{title}</td>
-        <td align="left" width="5%">{platform}</td>
-        <td align="left" width="40%">{version}</td>
-    </tr>
-</table>
-
+<div class="container-fluid app-container">
+    <div class="col-md-6">
+        <div class="container-fluid">
+            <div class="app-text col-md-3 text-left"><a href="{download_link}"><img class="icon" width="75" height="75" src="{baseurl}{image}"></a></div>
+            <div class="app-text col-md-6 text-left"><a class="app-link" href="{download_link}">{title}</a></div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="container-fluid">
+            <div class="app-text col-md-4 text-left">{platform}</div>
+            <div class="app-text col-md-6 text-left">{version}</div>
+        </div>
+    </div>
+</div>
