@@ -65,7 +65,7 @@ class AssetDirectory {
                 if ($object->isDir()) {
                     $path = str_replace($this->_dir->path, "", $object->getPathname());
                     
-                    $components = explode("/", $path);
+                    $components = explode("/", ltrim($path, "/"));
                     $subdir = $components[0];
                     if (!in_array($subdir, $this->ignored_subdirectories)) {
                         array_push($subDirs, $path);
@@ -105,6 +105,11 @@ class AssetDirectory {
                         $version[AppUpdater::FILE_ANDROID_JSON] = $subAssetDir->json;
                         $version[AppUpdater::FILE_COMMON_NOTES] = $subAssetDir->note;
                         
+                        // Is this a build for a specific android platform?
+                        $matches = array();
+                        if (preg_match("/android\/[0-9\.\/]*(?P<platform>[\w]+)/i", $subAssetDir->_dir->path, $matches)) {
+                            $version[AppUpdater::ANDROID_SUBPLATFORM] = ucfirst($matches["platform"]);
+                        }
 
                         $version[AppUpdater::FILE_COMMON_ICON] = $subAssetDir->icon;
                         $allVersions[$subDir] = $version;

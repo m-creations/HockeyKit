@@ -9,3 +9,33 @@ body.iOS #container .icon, body.desktop #container .icon {
 .icon {
     max-width: 96px;
 }
+
+.app-container, .app-container div {
+    padding:0;
+    margin:0;
+}
+
+.app-container {
+    margin-bottom:15px;
+}
+
+.app-text {
+    font-size:13pt;
+}
+
+.app-text a {
+    color: rgb(0,0,0);
+}
+
+.iOS .app-text, .android .app-text {
+    text-align:center !important;
+}
+
+.desktop .app-link {
+    height: 70px;
+    line-height: 70px;
+}
+
+#container h2 {
+    margin-top: 15px;
+}

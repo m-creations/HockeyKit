@@ -54,7 +54,8 @@ class Renderer {
             
             if ($shouldUseTable) {
                 $this->_superview->replace("prompt", "Click on the icons below to visit the download page for each app.");
-                $content->replace("platform", $app[AppUpdater::INDEX_PLATFORM]);
+                $platform = isset($app[AppUpdater::ANDROID_SUBPLATFORM]) ? $app[AppUpdater::INDEX_PLATFORM] . " (" . $app[AppUpdater::ANDROID_SUBPLATFORM] . ")" : $app[AppUpdater::INDEX_PLATFORM];
+                $content->replace("platform", $platform);
                 $content->replace("download_link", "/apps/" . dirname($app['path']));
                 $this->_content->append($content);
                 continue;
