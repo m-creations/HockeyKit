@@ -81,7 +81,14 @@ class Renderer {
             if ($app[AppUpdater::INDEX_PLATFORM] == AppUpdater::APP_PLATFORM_IOS ||
                 $app[AppUpdater::INDEX_PLATFORM] == AppUpdater::APP_PLATFORM_ANDROID) {
                 $button = new view("button.html");
-                $this->_downloadURL = $this->_router->baseURL . $app['path'];
+                
+                if ($app[AppUpdater::INDEX_PLATFORM] == AppUpdater::APP_PLATFORM_IOS) {
+                    $this->_downloadURL = "itms-services://?action=download-manifest&url=" . urlencode($this->_router->baseURL . "api/2/apps/" . $app[AppUpdater::INDEX_DIR] . "?format=plist");
+                }
+                else {
+                    $this->_downloadURL = $this->_router->baseURL . $app['path'];
+                }
+
                 $button->replaceAll(array(
                     "text"  => "Download Application",
                     "url"   => $this->_downloadURL
