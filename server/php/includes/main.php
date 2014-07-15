@@ -345,7 +345,7 @@ class AppUpdater
     {
 		
 		
-		$current = $fileSet;
+        $current = $fileSet;
         $ipa      = isset($current[self::FILE_IOS_IPA]) ? $current[self::FILE_IOS_IPA] : null;
         $plist    = isset($current[self::FILE_IOS_PLIST]) ? $current[self::FILE_IOS_PLIST] : null;
         $apk      = isset($current[self::FILE_ANDROID_APK]) ? $current[self::FILE_ANDROID_APK] : null;
@@ -482,21 +482,21 @@ class AppUpdater
 
         $files = $this->getApplicationVersions($directory, $device);
         
-		if (count($files) == 0) {
+        if (count($files) == 0) {
             return;
         }
 		
-		if (!array_key_exists('platform', $arguments) && !array_key_exists('version', $arguments)) {
-			$versions = $files[self::VERSIONS_SPECIFIC_DATA];
-			foreach ($versions as $version => $fileSet) {
-				$app = $this->appFromVersionFileSet($fileSet, $file, $directory, $files, $device);
-				$this->applications[] = $app;	
-			}
-		} else {
-			$current = $this->findPublicVersion($files[self::VERSIONS_SPECIFIC_DATA]);
-			$app = $this->appFromVersionFileSet($current, $file, $directory, $files, $device);
-			$this->applications[] = $app;	
-		}		
+        if (!array_key_exists('platform', $arguments) && !array_key_exists('version', $arguments)) {
+            $versions = $files[self::VERSIONS_SPECIFIC_DATA];
+            foreach ($versions as $version => $fileSet) {
+                $app = $this->appFromVersionFileSet($fileSet, $file, $directory, $files, $device);
+                $this->applications[] = $app;	
+            }
+        } else {
+            $current = $this->findPublicVersion($files[self::VERSIONS_SPECIFIC_DATA]);
+            $app = $this->appFromVersionFileSet($current, $file, $directory, $files, $device);
+            $this->applications[] = $app;	
+        }		
     }
     
     protected function parseUserList()
