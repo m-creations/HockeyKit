@@ -355,8 +355,8 @@ class AppUpdater
         
         $profile = isset($files[self::VERSIONS_COMMON_DATA][self::FILE_IOS_PROFILE]) ?
             $files[self::VERSIONS_COMMON_DATA][self::FILE_IOS_PROFILE] : null;
-        $image = isset($files[self::VERSIONS_COMMON_DATA][self::FILE_COMMON_ICON]) ?
-            $files[self::VERSIONS_COMMON_DATA][self::FILE_COMMON_ICON] : null;
+        $image = isset($fileSet[AppUpdater::FILE_COMMON_ICON]) ?
+            $fileSet[AppUpdater::FILE_COMMON_ICON] : null;
 
         if (!$ipa && !$apk) {
             return;
