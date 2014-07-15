@@ -97,7 +97,7 @@ class AssetDirectory {
                             continue;
                         }
                         
-                        $version[AppUpdater::FILE_COMMON_ICON] = $subAssetDir->icon;;
+                        $version[AppUpdater::FILE_COMMON_ICON] = $subAssetDir->icon;
                         $allVersions[$subDir] = $version;
                     } else if ($subAssetDir->apk && $subAssetDir->json && (!$platform || $platform == AppUpdater::PLATFORM_ANDROID)) {
                         $version = array();
@@ -106,7 +106,7 @@ class AssetDirectory {
                         $version[AppUpdater::FILE_COMMON_NOTES] = $subAssetDir->note;
                         
 
-                        $version[AppUpdater::FILE_COMMON_ICON] = $subAssetDir->icon;;
+                        $version[AppUpdater::FILE_COMMON_ICON] = $subAssetDir->icon;
                         $allVersions[$subDir] = $version;
                     }
                 }
@@ -122,7 +122,7 @@ class AssetDirectory {
                 $version[AppUpdater::FILE_IOS_IPA] = $this->ipa;
                 $version[AppUpdater::FILE_IOS_PLIST] = $this->plist;
                 $version[AppUpdater::FILE_COMMON_NOTES] = $this->note;
-                $version[AppUpdater::FILE_COMMON_ICON] = $this->icon;;
+                $version[AppUpdater::FILE_COMMON_ICON] = $this->icon;
                 $allVersions[] = $version;
                 $files[AppUpdater::VERSIONS_SPECIFIC_DATA] = $allVersions;
                 $files[AppUpdater::VERSIONS_COMMON_DATA][AppUpdater::FILE_IOS_PROFILE] = $this->profile;
@@ -130,7 +130,7 @@ class AssetDirectory {
                 $version[AppUpdater::FILE_ANDROID_APK] = $this->apk;
                 $version[AppUpdater::FILE_ANDROID_JSON] = $this->json;
                 $version[AppUpdater::FILE_COMMON_NOTES] = $this->note;
-                $version[AppUpdater::FILE_COMMON_ICON] = $this->icon;;
+                $version[AppUpdater::FILE_COMMON_ICON] = $this->icon;
                 $allVersions[] = $version;
                 $files[AppUpdater::VERSIONS_SPECIFIC_DATA] = $allVersions;
             }
