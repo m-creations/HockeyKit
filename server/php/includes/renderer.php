@@ -29,11 +29,11 @@ class Renderer {
                     return true;
             }
         });
-		        		
-		if (count($applications) == 0) {
-			$this->_content = NO_APPS_AVAILABLE_MESSAGE;
-		}
-		  		
+        
+        if (count($applications) == 0) {
+            $this->_content = NO_APPS_AVAILABLE_MESSAGE;
+        }
+            
         $shouldUseTable = (count($applications) > 1);
 				
         foreach($applications as $app) {
@@ -58,7 +58,7 @@ class Renderer {
             ));
             
             if ($shouldUseTable) {
-            	$this->_prompt = "Click on the icons below to visit the download page for each app.";
+                $this->_prompt = "Click on the icons below to visit the download page for each app.";
                 $platform = isset($app[AppUpdater::ANDROID_SUBPLATFORM]) ? $app[AppUpdater::INDEX_PLATFORM] . " (" . $app[AppUpdater::ANDROID_SUBPLATFORM] . ")" : $app[AppUpdater::INDEX_PLATFORM];
                 $content->replace("platform", $platform);
                 $content->replace("download_link", "/apps/" . dirname($app['path']));
@@ -111,7 +111,7 @@ class Renderer {
             else {
                 $content->replace("releasenotes", new view());
             }
-				            
+            
             $this->_content->append($content);
         }
     }
