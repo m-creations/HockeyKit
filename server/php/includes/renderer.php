@@ -87,7 +87,7 @@ class Renderer {
                 $app[AppUpdater::INDEX_PLATFORM] == AppUpdater::APP_PLATFORM_ANDROID) {
                 $button = new view("button.html");
                 
-                if ($app[AppUpdater::INDEX_PLATFORM] == AppUpdater::APP_PLATFORM_IOS) {
+                if ($app[AppUpdater::INDEX_PLATFORM] == AppUpdater::APP_PLATFORM_IOS && $device == Device::iOS) {
                     $this->_downloadURL = "itms-services://?action=download-manifest&url=" . urlencode($this->_router->baseURL . "api/2/apps/" . $app[AppUpdater::INDEX_DIR] . "?format=plist");
                 }
                 else {
