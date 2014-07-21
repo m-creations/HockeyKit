@@ -91,6 +91,7 @@ class AssetDirectory {
                         $version[AppUpdater::FILE_COMMON_NOTES] = $subAssetDir->note;
                         $version[AppUpdater::FILE_VERSION_RESTRICT] = $subAssetDir->restrict;
                         $version[AppUpdater::FILE_VERSION_MANDATORY] = $subAssetDir->mandatory;
+                        $version[AppUpdater::INDEX_DEVICES] = $this->devicesForIPA($subAssetDir->ipa);
                         
                         // if this is a restricted version, check if the UDID is provided and allowed
                         if ($subAssetDir->restrict && !$this->checkProtectedVersion($subAssetDir->restrict)) {
@@ -128,6 +129,8 @@ class AssetDirectory {
                 $version[AppUpdater::FILE_IOS_PLIST] = $this->plist;
                 $version[AppUpdater::FILE_COMMON_NOTES] = $this->note;
                 $version[AppUpdater::FILE_COMMON_ICON] = $this->icon;
+                $version[AppUpdater::INDEX_DEVICES] = $this->devicesForIPA($this->ipa);
+                
                 $allVersions[] = $version;
                 $files[AppUpdater::VERSIONS_SPECIFIC_DATA] = $allVersions;
                 $files[AppUpdater::VERSIONS_COMMON_DATA][AppUpdater::FILE_IOS_PROFILE] = $this->profile;
@@ -142,6 +145,17 @@ class AssetDirectory {
         }
         
         return $files;
+    }
+    
+    private function devicesForIPA($ipa) {
+        $file = new SplFileObject($ipa);
+        $ipa = new IPA($file);
+        if ($ipa->provisionsAllDevices()) {
+            return AppUpdater::PROVISIONED_ALL_DEVICES;
+        }
+        else {
+            return $ipa->provisionedDevices();
+        }
     }
     
     protected function checkProtectedVersion($restrict) {

@@ -39,3 +39,7 @@ body.iOS #container .icon, body.desktop #container .icon {
 #container h2 {
     margin-top: 15px;
 }
+
+.button {
+    margin:10px;
+}
