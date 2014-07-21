@@ -112,6 +112,32 @@ class Renderer {
                 $content->replace("releasenotes", new view());
             }
             
+            $devices = null;
+            if ($app[AppUpdater::INDEX_DEVICES] && $device == Device::Desktop) {
+                $devices = new view("devices.html");
+                
+                $message = null;
+                $device_list = null;
+                if ($app[AppUpdater::INDEX_DEVICES] == AppUpdater::PROVISIONED_ALL_DEVICES) {
+                    $message = ENTERPRISE_DEVICES_MESSAGE;
+                }
+                else {
+                    $message = PROVISIONED_DEVICES_MESSAGE;
+                    $device_row = new view('device_row.html');
+                    foreach ($app[AppUpdater::INDEX_DEVICES] as $device) {
+                        $device_list .= $device_row->replace('uuid', $device);
+                        $device_row->reset();
+                    }
+                }
+                
+                $devices->replaceAll(array(
+                    "message" => $message,
+                    "device_list" => $device_list
+                ));
+            }
+            
+            $content->replace("devices", $devices);
+            
             $this->_content->append($content);
         }
     }

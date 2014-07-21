@@ -35,6 +35,7 @@ require_once('view.php');
 require_once('device.php');
 require_once('renderer.php');
 require_once('assetdirectory.php');
+require_once('ipa.php');
 
 class AppUpdater
 {
@@ -115,6 +116,7 @@ class AppUpdater
     const INDEX_IMAGE           = 'image';
     const INDEX_STATS           = 'stats';
     const INDEX_PLATFORM        = 'platform';
+    const INDEX_DEVICES         = 'devices';
 
     // define filetypes
     const FILE_IOS_PLIST        = '.plist';
@@ -125,6 +127,8 @@ class AppUpdater
     const FILE_COMMON_NOTES     = '.txt';
     const FILE_COMMON_ICON      = '.png';
     const ANDROID_SUBPLATFORM   = 'subplatform';
+    
+    const PROVISIONED_ALL_DEVICES = 'alldevices';
 
     const FILE_VERSION_MANDATORY  = '.mandatory';             // if present in a version subdirectory, defines that version to be mandatory
     const FILE_VERSION_RESTRICT   = '.team';                  // if present in a version subdirectory, defines the teams that do have access, comma separated
@@ -397,7 +401,9 @@ class AppUpdater
                 $newApp[self::INDEX_PROFILE_UPDATE] = filectime($profile);
             }
             $newApp[self::INDEX_PLATFORM]       = self::APP_PLATFORM_IOS;
-                    
+            
+            $newApp[self::INDEX_DEVICES] = $current[self::INDEX_DEVICES];
+            
         } else if ($apk) {
             // Android Application
             
