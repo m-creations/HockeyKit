@@ -7,7 +7,7 @@ class Router
 {
     static $routes = array(
         '^/apps/(?P<bundleidentifier>[\w/\.-]*?)(?:/(?P<platform>android|ios|support))?(?:/(?P<version>[0-9.]+))?$' => '/app',
-        '/api/2/apps/(?P<bundleidentifier>[\w-.]+)(?:/(?P<platform>android|ios|support))?(?:/(?P<version>[0-9.]+))?' => '/api',
+        '^/api/2/apps/(?P<bundleidentifier>[\w/\.-]*)(?:/(?P<platform>android|ios|support))?(?:/(?P<version>[0-9.]+))?' => '/api',
         '/apps/' => '/index',
         '/apps' => '/index',
         '/' => '/index'
@@ -79,7 +79,6 @@ class Router
     protected $args_files = array();
     
     protected function init($options) {
-
         $path = dirname($_SERVER['SCRIPT_NAME']);
 
 	    /* Check if HockeyKit is running on a Windows server, if so: update the path variable to let it parse correctly. */
@@ -123,15 +122,13 @@ class Router
         $this->api = (strpos($request, '/api/') === false && strpos($request, '/apps/') === false) || $is_v1_client ?
             AppUpdater::API_V1 : AppUpdater::API_V2;
 
-        if ($this->api == AppUpdater::API_V1)
-        {
+        if ($this->api == AppUpdater::API_V1) {
             return $this->routeV1($options, $is_v1_client);
         }
 
         // find matching route
         foreach (self::$routes as $route => $info) {
-            if (self::match($request, $route, $info))
-            {
+            if (self::match($request, $route, $info)) {
                 return $this->run($options);
             }
         }
@@ -157,7 +154,6 @@ class Router
         
         // Logger::log("Route:\t$route");
         list($controller, $action) = explode('/', $info);
-
         // Logger::log("*** Match $controller/$action");
         $this->controller = $controller;
         $this->action     = $action;
