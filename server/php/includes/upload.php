@@ -28,7 +28,7 @@ class Upload {
     
     public function receive() {
         if ($this->requiresAuthentication()) {
-            header('WWW-Authenticate: Basic realm="Distro Upload"');
+            header('WWW-Authenticate: Basic realm="' . UPLOAD_REALM . '"');
             header('HTTP/1.0 401 Unauthorized');
             return Helper::sendJSONAndExit(array("status" => self::UPLOAD_UNAUTHORISED));
         }
