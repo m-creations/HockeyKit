@@ -36,6 +36,7 @@ require_once('device.php');
 require_once('renderer.php');
 require_once('assetdirectory.php');
 require_once('ipa.php');
+require_once('upload.php');
 
 class AppUpdater
 {
@@ -195,6 +196,11 @@ class AppUpdater
     protected function index($arguments)
     {
         return $this->show(null);
+    }
+    
+    protected function upload($arguments) {
+        $uploader = new Upload($this->appDirectory, Router::get()->baseURL, $arguments);
+        return $uploader->receive();
     }
     
     protected function app($arguments)
