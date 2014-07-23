@@ -113,7 +113,7 @@ class Renderer {
             }
             
             $devices = null;
-            if ($app[AppUpdater::INDEX_DEVICES] && $device == Device::Desktop) {
+            if (isset($app[AppUpdater::INDEX_DEVICES]) && $device == Device::Desktop) {
                 $devices = new view("devices.html");
                 
                 $message = null;
