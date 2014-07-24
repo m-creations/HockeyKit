@@ -79,6 +79,7 @@ class Upload {
     
     private function createTargetDirectory() {
         $this->createDirectory($this->path(), "Unable to create target directory");
+        $this->removePackageFromDirectory($this->path());
     }
     
     private function createMetadata() {
@@ -131,7 +132,17 @@ class Upload {
     }
     
     private function path() {
-        return $this->sanitisePath($this->_baseDirectory . $this->_metadata["location"]);
+        return $this->sanitisePath($this->_baseDirectory, $this->_metadata["location"]);
+    }
+    
+    private function removePackageFromDirectory($path) {
+        foreach (new DirectoryIterator($path) as $fileInfo) {
+            $validFile = $fileInfo->isFile() || 
+                         ($fileInfo->isDir() && $fileInfo->getFilename() == "store");
+            if(!$fileInfo->isDot() || $validFile) {
+                unlink($fileInfo->getPathname());
+            }
+        }
     }
     
     private function createDirectory($path, $failureMessage) {
@@ -147,8 +158,10 @@ class Upload {
         return sprintf($format, $this->_baseURL, $this->_metadata["location"], $file["name"]);
     }
     
-    private function sanitisePath($path) {
-        if (strpos($path, "..") !== false) {
+    private function sanitisePath($baseDirectory, $location) {
+        $path = $baseDirectory . $location;
+        if (strpos($path, "..") !== false ||
+            strlen(trim($location)) == 0) {
             throw new InvalidArgumentException("Invalid path provided");
         }
         return $path;
