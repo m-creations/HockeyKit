@@ -27,7 +27,7 @@
 				<key>bundle-identifier</key>
 				<string>{bundleid}</string>
 				<key>bundle-version</key>
-				<string>1.0.1</string>
+				<string>{version}</string>
 				<key>kind</key>
 				<string>software</string>
 				<key>title</key>

@@ -153,7 +153,7 @@ class Upload {
         }
     }
     
-    private function publishAppPackage($file, $location = null, $format = "%sapps/%s/%s") {
+    private function publishAppPackage($file, $location = null, $format = "%sapps/%s") {
         move_uploaded_file($file["tmp_name"], "{$this->path()}/" . $location . $file["name"]);
         return sprintf($format, $this->_baseURL, $this->_metadata["location"], $file["name"]);
     }
