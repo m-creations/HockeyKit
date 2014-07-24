@@ -8,6 +8,7 @@ class Upload {
     const ADHOC_FILE = "adhoc";
     const STORE_FILE = "store";
     const ICON_FILE = "icon";
+    const RELEASENOTES_FILE = "releasenotes";
     
     private $_arguments;
     private $_metadata;
@@ -119,6 +120,11 @@ class Upload {
         if (isset($_FILES[self::STORE_FILE])) {
             $this->createDirectory("{$this->path()}/store/", "Unable to create store directory");
             $apps[self::STORE_FILE] = $this->publishAppPackage($_FILES[self::STORE_FILE], "store/", "%s%s/store/%s");
+        }
+        
+        // Move releasenotes
+        if (isset($_FILES[self::RELEASENOTES_FILE])) {
+            move_uploaded_file($_FILES[self::RELEASENOTES_FILE]["tmp_name"], "{$this->path()}/" . $_FILES[self::RELEASENOTES_FILE]["name"]);
         }
         
         return $apps;
