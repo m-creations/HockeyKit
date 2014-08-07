@@ -147,15 +147,16 @@ class Upload {
     
     private function createDirectory($path, $failureMessage) {
         if (!is_dir($path)) {
-            if (!mkdir($path, 01770, true)) {
+            if (!mkdir($path, 01777, true)) {
                 throw new RuntimeException($failureMessage);
             }
         }
     }
     
     private function publishAppPackage($file, $location = null, $format = "%sapps/%s") {
-        move_uploaded_file($file["tmp_name"], "{$this->path()}/" . $location . $file["name"]);
-        return sprintf($format, $this->_baseURL, $this->_metadata["location"], $file["name"]);
+        $name = preg_replace("/[^0-9a-z\.A-Z]+/", "_",  $file["name"]);
+        move_uploaded_file($file["tmp_name"], "{$this->path()}/" . $location . $name);
+        return sprintf($format, $this->_baseURL, $this->_metadata["location"], $name);
     }
     
     private function sanitisePath($baseDirectory, $location) {
