@@ -142,14 +142,24 @@ class Renderer {
         }
     }
     
+    private function version() {
+        $versionPath = dirname(__FILE__) . "/version.php";
+        if (file_exists($versionPath)) {
+            require_once($versionPath);
+            return GitVersion::COMMIT . " (" . GitVersion::DATE . ")";
+        }
+        return "";
+    }
+    
     
     public function __toString(){
         return $this->_superview->replaceAll(array(
             "content"       => $this->_content, 
             "baseurl"       => $this->_router->baseURL,
             "downloadURL"   => $this->_downloadURL,
-            "prompt"		=> $this->_prompt,
-            "copyright"     => COPYRIGHT_FOOTER
+            "prompt"        => $this->_prompt,
+            "copyright"     => COPYRIGHT_FOOTER,
+            "version"       => $this->version()
         ))->get();
     }
 }

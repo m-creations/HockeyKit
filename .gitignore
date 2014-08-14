@@ -21,3 +21,4 @@ bin
 *.swp
 *~.nib
 profile
+server/php/includes/version.php
