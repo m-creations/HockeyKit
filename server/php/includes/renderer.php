@@ -157,7 +157,7 @@ class Renderer {
             "content"       => $this->_content, 
             "baseurl"       => $this->_router->baseURL,
             "downloadURL"   => $this->_downloadURL,
-            "prompt"		    => $this->_prompt,
+            "prompt"        => $this->_prompt,
             "copyright"     => COPYRIGHT_FOOTER,
             "version"       => $this->version()
         ))->get();
