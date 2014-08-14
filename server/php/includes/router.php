@@ -6,8 +6,8 @@
 class Router
 {
     static $routes = array(
-        '^/apps/(?P<bundleidentifier>[\w/\.-]*?)(?:/(?P<platform>android|ios|support))?(?:/(?P<version>[0-9.]+))?$' => '/app',
-        '^/api/2/apps/(?P<bundleidentifier>[\w/\.-]*)(?:/(?P<platform>android|ios|support))?(?:/(?P<version>[0-9.]+))?' => '/api',
+        '^/apps/(?P<bundleidentifier>[\w/\.-]*?)(?:/(?P<platform>android|ios|support))?(?:/(?P<version>[\w\d.]+))?$' => '/app',
+        '^/api/2/apps/(?P<bundleidentifier>[\w/\.-]*?)(?:/(?P<platform>android|ios|support))?(?:/(?P<version>[\w\d.]+))?$' => '/api',
         '/api/upload' => '/upload',
         '/apps/' => '/index',
         '/apps' => '/index',
