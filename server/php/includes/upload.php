@@ -132,7 +132,29 @@ class Upload {
     }
     
     private function path() {
-        return $this->sanitisePath($this->_baseDirectory, $this->_metadata["location"]);
+        return $this->sanitisePath($this->_baseDirectory, $this->location());
+    }
+    
+    private function location() {
+        $disallowedCharacterPattern = "([^\w\d.\/]+)";
+        $patterns = array(
+            /**
+             Filter out any trailing characters we don't want,
+             and replace them with nothing.
+            */
+            $disallowedCharacterPattern . '$'  => "",
+            /**
+             Change any instances of disallowed characters into
+             a dot separator.
+            */
+            $disallowedCharacterPattern        => "."
+        );
+        
+        $location = $this->_metadata["location"];
+        foreach ($patterns as $pattern => $replacement) {
+          $location = preg_replace("/$pattern/", $replacement, $location);
+        }
+        return $location;
     }
     
     private function removePackageFromDirectory($path) {
@@ -156,7 +178,7 @@ class Upload {
     private function publishAppPackage($file, $location = null, $format = "%sapps/%s") {
         $name = preg_replace("/[^0-9a-z\.A-Z]+/", "_",  $file["name"]);
         move_uploaded_file($file["tmp_name"], "{$this->path()}/" . $location . $name);
-        return sprintf($format, $this->_baseURL, $this->_metadata["location"], $name);
+        return sprintf($format, $this->_baseURL, $this->location(), $name);
     }
     
     private function sanitisePath($baseDirectory, $location) {
