@@ -66,7 +66,7 @@ class Renderer {
                 continue;
             }
 						
-            $this->_superview->replace("prompt", "Visit this page directly from your iPad, iPhone, iPod touch or Android device and you will be able to install an app directly on your device.");
+            $this->_prompt = $this->promptForPlatform($app[AppUpdater::INDEX_PLATFORM]);
             
             $content->replace("size", round($app[AppUpdater::INDEX_APPSIZE] / 1024 / 1024, 1) . " MB");
             $content->replace("utc_created_time", $app[AppUpdater::INDEX_DATE]);
@@ -151,6 +151,16 @@ class Renderer {
         return "";
     }
     
+    private function promptForPlatform($platform) {
+        $prompt = "";
+        if ($platform == AppUpdater::APP_PLATFORM_IOS) {
+            $prompt = new view("prompt_ios.html");
+        }
+        else if ($platform == AppUpdater::APP_PLATFORM_ANDROID) {
+            $prompt = new view("prompt_android.html");
+        }
+        return $prompt;
+    }
     
     public function __toString(){
         return $this->_superview->replaceAll(array(
