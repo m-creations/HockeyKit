@@ -25,7 +25,10 @@ class iOSAppUpdater extends AbstractAppUpdater
         $bundleidentifier = $arguments[self::PARAM_2_IDENTIFIER];
         $format           = $arguments[self::PARAM_2_FORMAT];
 
-        $directory = dir($bundleidentifier);
+        $path = $arguments;
+        // Remove the format from the array
+        array_pop($path);
+        $directory = dir(join($path, "/"));
         
         $files = $this->getApplicationVersions($directory, self::PLATFORM_IOS);
         

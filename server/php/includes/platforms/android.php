@@ -26,7 +26,13 @@ class AndroidAppUpdater extends AbstractAppUpdater
         $bundleidentifier = $arguments[self::PARAM_2_IDENTIFIER];
         $format           = $arguments[self::PARAM_2_FORMAT];
         
-        $files = $this->getApplicationVersions($bundleidentifier, self::PLATFORM_ANDROID);
+        
+        $path = $arguments;
+        // Remove the format from the array
+        array_pop($path);
+        $directory = dir(join($path, "/"));
+        
+        $files = $this->getApplicationVersions($directory, self::PLATFORM_ANDROID);
         if (count($files) == 0) {
             Logger::log("no versions found: $bundleidentifier $type");
             return Helper::sendJSONAndExit(self::E_NO_VERSIONS_FOUND);
