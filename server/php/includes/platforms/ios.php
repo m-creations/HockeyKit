@@ -24,19 +24,26 @@ class iOSAppUpdater extends AbstractAppUpdater
     protected function download($arguments) {
         $bundleidentifier = $arguments[self::PARAM_2_IDENTIFIER];
         $format           = $arguments[self::PARAM_2_FORMAT];
+
+        $path = $arguments;
+        // Remove the format from the array
+        array_pop($path);
+        $directory = dir(join($path, "/"));
         
-        $files = $this->getApplicationVersions($bundleidentifier, self::PLATFORM_IOS);
+        $files = $this->getApplicationVersions($directory, self::PLATFORM_IOS);
+        
         if (count($files) == 0) {
             Logger::log("no versions found: $bundleidentifier $type");
             return Helper::sendJSONAndExit(self::E_NO_VERSIONS_FOUND);
         }
-
-        $dir = array_shift(array_keys($files[self::VERSIONS_SPECIFIC_DATA]));
+        
+        $keys = array_keys($files[self::VERSIONS_SPECIFIC_DATA]);
+        $dir = array_shift($keys);
         $current = $files[self::VERSIONS_SPECIFIC_DATA][$dir];
         
         if ($format == self::PARAM_2_FORMAT_VALUE_PLIST) // || $type == self::PARAM_1_TYPE_VALUE_APP)
         {
-            $image = $files[self::VERSIONS_COMMON_DATA][self::FILE_COMMON_ICON];
+            $image = $current[self::FILE_COMMON_ICON];
             $file = isset($current[self::FILE_IOS_PLIST]) ? $current[self::FILE_IOS_PLIST] : null;
             
             if (!$file)
@@ -244,7 +251,7 @@ XML;
         }
 
         $profile = $files[self::VERSIONS_COMMON_DATA][self::FILE_IOS_PROFILE];
-        $image   = $files[self::VERSIONS_COMMON_DATA][self::FILE_COMMON_ICON];
+        $image   = $current[self::FILE_COMMON_ICON];
 
         $udid       = Router::arg(self::PARAM_2_UDID);
         $appversion = Router::arg(self::PARAM_2_APP_VERSION) != null ? Router::arg(self::PARAM_2_APP_VERSION) : Router::arg(self::PARAM_1_APP_VERSION);

@@ -1,0 +1,50 @@
+#container h2 {
+    margin-top:0px;
+}
+
+body.iOS #container .icon, body.desktop #container .icon {
+    border-radius:20px;
+}
+
+.icon {
+    max-width: 96px;
+}
+
+.app-container, .app-container div {
+    padding:0;
+    margin:0;
+}
+
+.app-container {
+    margin-bottom:15px;
+}
+
+.app-text {
+    font-size:13pt;
+}
+
+.app-text a {
+    color: rgb(0,0,0);
+}
+
+.iOS .app-text, .android .app-text {
+    text-align:center !important;
+}
+
+.desktop .app-link {
+    height: 70px;
+    line-height: 70px;
+}
+
+#container h2 {
+    margin-top: 15px;
+}
+
+.button {
+    margin:10px;
+}
+
+.version {
+  color: #b2b2b2;
+  font-size: 8pt;
+}
